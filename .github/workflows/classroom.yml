@@ -1,0 +1,74 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Simple correct parenthesis test 1
+      id: simple-correct-parenthesis-test-1
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Simple correct parenthesis test 1
+        setup-command: mvn compile
+        command: mvn -Dtest=ParenthesisTests#simpleCorrectParenthesisTest test
+        timeout: 10
+    - name: Simple incorrect parenthesis test 1
+      id: simple-incorrect-parenthesis-test-1
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Simple incorrect parenthesis test 1
+        setup-command: mvn compile
+        command: mvn -Dtest=ParenthesisTests#simpleIncorrectParenthesisTest1 test
+        timeout: 10
+    - name: Simple incorrect parenthesis test 2
+      id: simple-incorrect-parenthesis-test-2
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Simple incorrect parenthesis test 2
+        setup-command: mvn compile
+        command: mvn -Dtest=ParenthesisTests#simpleIncorrectParenthesisTest2 test
+        timeout: 10
+    - name: Correct Java parenthesis test
+      id: correct-java-parenthesis-test
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Correct Java parenthesis test
+        setup-command: mvn compile
+        command: mvn -Dtest=ParenthesisTests#correctJavaParenthesisTest test
+        timeout: 10
+    - name: Incorrect JSON parenthesis test 1
+      id: incorrect-json-parenthesis-test-1
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Incorrect JSON parenthesis test 1
+        setup-command: mvn compile
+        command: mvn -Dtest=ParenthesisTests#incorrectJSONParenthesisTest1 test
+        timeout: 10
+    - name: Incorrect JSON parenthesis test 2
+      id: incorrect-json-parenthesis-test-2
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Incorrect JSON parenthesis test 2
+        setup-command: mvn compile
+        command: mvn -Dtest=ParenthesisTests#incorrectJSONParenthesisTest2 test
+        timeout: 10
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        SIMPLE-CORRECT-PARENTHESIS-TEST-1_RESULTS: "${{steps.simple-correct-parenthesis-test-1.outputs.result}}"
+        SIMPLE-INCORRECT-PARENTHESIS-TEST-1_RESULTS: "${{steps.simple-incorrect-parenthesis-test-1.outputs.result}}"
+        SIMPLE-INCORRECT-PARENTHESIS-TEST-2_RESULTS: "${{steps.simple-incorrect-parenthesis-test-2.outputs.result}}"
+        CORRECT-JAVA-PARENTHESIS-TEST_RESULTS: "${{steps.correct-java-parenthesis-test.outputs.result}}"
+        INCORRECT-JSON-PARENTHESIS-TEST-1_RESULTS: "${{steps.incorrect-json-parenthesis-test-1.outputs.result}}"
+        INCORRECT-JSON-PARENTHESIS-TEST-2_RESULTS: "${{steps.incorrect-json-parenthesis-test-2.outputs.result}}"
+      with:
+        runners: simple-correct-parenthesis-test-1,simple-incorrect-parenthesis-test-1,simple-incorrect-parenthesis-test-2,correct-java-parenthesis-test,incorrect-json-parenthesis-test-1,incorrect-json-parenthesis-test-2
